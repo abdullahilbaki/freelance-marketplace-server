@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const verifyFirebaseToken = require("./auth");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -38,7 +39,7 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/tasks", async (req, res) => {
+    app.post("/tasks", verifyFirebaseToken, async (req, res) => {
       const newTask = req.body;
       // console.log(newTask);
       const result = await tasksCollection.insertOne(newTask);
@@ -61,7 +62,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/my-tasks", async (req, res) => {
+    app.get("/my-tasks", verifyFirebaseToken, async (req, res) => {
       const { userEmail } = req.query;
 
       const query = userEmail ? { userEmail } : {};
@@ -74,7 +75,7 @@ async function run() {
       }
     });
 
-    app.get("/my-tasks/:id", async (req, res) => {
+    app.get("/my-tasks/:id", verifyFirebaseToken, async (req, res) => {
       const id = req.params.id;
       const userEmail = req.query.userEmail;
 
@@ -96,7 +97,7 @@ async function run() {
       }
     });
 
-    app.put("/my-tasks/:id", async (req, res) => {
+    app.put("/my-tasks/:id", verifyFirebaseToken, async (req, res) => {
       const id = req.params.id;
       const userEmail = req.query.userEmail;
       const updatedTaskData = req.body;
@@ -128,7 +129,7 @@ async function run() {
       }
     });
 
-    app.delete("/my-tasks/:id", async (req, res) => {
+    app.delete("/my-tasks/:id", verifyFirebaseToken, async (req, res) => {
       const id = req.params.id;
       try {
         const result = await tasksCollection.deleteOne({

@@ -1,3 +1,4 @@
 node_modules
 .env
 .vercel
+freelance-marketplace-service-account-key.json
